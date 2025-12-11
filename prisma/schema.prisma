@@ -94,7 +94,7 @@ model Chat{
   title String?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
   messages ChatMessage[]
 }
 
@@ -105,5 +105,5 @@ model ChatMessage{
   content String
   createdAt DateTime @default(now())
 
-  chat Chat @relation(fields: [chatId],references: [id])
+  chat Chat @relation(fields: [chatId],references: [id],onDelete: Cascade)
 }
