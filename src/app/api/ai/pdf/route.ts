@@ -16,44 +16,39 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
   try {
-    // dynamic, protected polyfill + import
-    try {
-      const canvasMod: any = await import("@napi-rs/canvas").catch(() => null);
-      if (canvasMod) {
-        (globalThis as any).ImageData = (globalThis as any).ImageData || canvasMod.ImageData;
-        (globalThis as any).DOMMatrix = (globalThis as any).DOMMatrix || canvasMod.DOMMatrix;
-        (globalThis as any).Path2D = (globalThis as any).Path2D || canvasMod.Path2D;
-      }
-    } catch (polyErr) {
-      console.warn("canvas polyfill load failed:", polyErr);
-      // continue — we will catch pdfjs initialization errors below
-    }
-
-    const pdfjsLib: any = await import("pdfjs-dist/legacy/build/pdf.mjs");
-
-    // parse form and file
     const form = await req.formData();
     const file = form.get("file") as File | null;
     if (!file) return NextResponse.json({ error: "PDF file is required" }, { status: 400 });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Actually extract text using pdfjs (safe if polyfill present)
-    const pdfData = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ data: pdfData });
-    const pdf = await loadingTask.promise;
-
-    let finalText = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      for (const item of textContent.items) finalText += (item as any).str + " ";
+    if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+      return NextResponse.json({ error: "invalid_pdf_buffer" }, { status: 400 });
     }
 
-    return NextResponse.json({ text: finalText.trim() });
+    const header = buffer.subarray(0, 4).toString("utf8");
+    if (header !== "%PDF") {
+      console.error("Uploaded file missing %PDF header", { header });
+      return NextResponse.json({ error: "uploaded_file_is_not_pdf" }, { status: 400 });
+    }
+
+    // dynamic import of pdf-parse (buffer-only)
+    const pdfParseMod: any = await import("pdf-parse").catch((e) => {
+      console.error("Could not import pdf-parse:", e);
+      throw new Error("internal_parser_missing");
+    });
+    const pdfParse = pdfParseMod.default || pdfParseMod;
+
+    const parsed = await pdfParse(buffer);
+    if (!parsed || typeof parsed.text !== "string") {
+      console.error("pdf-parse returned unexpected result", { parsed });
+      return NextResponse.json({ error: "pdf_parse_invalid_result" }, { status: 500 });
+    }
+
+    return NextResponse.json({ text: parsed.text });
   } catch (err: any) {
     console.error("/api/ai/pdf fatal:", err);
-    // if pdfjs threw DOMMatrix error, this will show in logs — helpful for debugging
     return NextResponse.json({ error: "server_error", details: err?.message ?? String(err) }, { status: 500 });
   }
 }

@@ -1,41 +1,42 @@
-try {
-  // dynamic import so server builds will try to load the native module
-  const canvasMod: any = await import("@napi-rs/canvas");
-  // map common DOM-like classes if missing
-  if (!(globalThis as any).ImageData && canvasMod.ImageData) {
-    (globalThis as any).ImageData = canvasMod.ImageData;
+// src/lib/pdf.ts
+// Buffer-only wrapper for pdf-parse to avoid any file-path handling by the library.
+
+export async function extractTextFromPdf(input: Buffer | ArrayBuffer | Uint8Array): Promise<string> {
+  // Convert to Buffer if needed
+  let buffer: Buffer;
+  if (Buffer.isBuffer(input)) {
+    buffer = input;
+  } else if (input instanceof ArrayBuffer) {
+    buffer = Buffer.from(input);
+  } else if (input instanceof Uint8Array) {
+    buffer = Buffer.from(input.buffer);
+  } else {
+    throw new Error("extractTextFromPdf: input must be Buffer | ArrayBuffer | Uint8Array");
   }
-  if (!(globalThis as any).DOMMatrix && canvasMod.DOMMatrix) {
-    (globalThis as any).DOMMatrix = canvasMod.DOMMatrix;
+
+  if (buffer.length === 0) {
+    throw new Error("extractTextFromPdf: buffer is empty");
   }
-  if (!(globalThis as any).Path2D && canvasMod.Path2D) {
-    (globalThis as any).Path2D = canvasMod.Path2D;
+
+  // defensive check — PDF files start with "%PDF"
+  const header = buffer.subarray(0, 4).toString("utf8");
+  if (header !== "%PDF") {
+    throw new Error("extractTextFromPdf: uploaded file is not a valid PDF");
   }
-} catch (err) {
-  console.warn("canvas polyfill (@napi-rs/canvas) failed to load:", err?.message ?? err);
-}
 
+  // dynamic import so the module is only loaded at runtime
+  const pdfParseModule: any = await import("pdf-parse");
+  const pdfParse = pdfParseModule.default || pdfParseModule;
 
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-
-export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
-  // Convert buffer to Uint8Array (pdfjs required format)
-  const pdfData = new Uint8Array(buffer);
-
-  const loadingTask = pdfjsLib.getDocument({ data: pdfData });
-  const pdf = await loadingTask.promise;
-
-  let finalText = "";
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-
-    for (const item of textContent.items) {
-      finalText += (item as any).str + " ";
+  try {
+    // IMPORTANT: pass Buffer (never pass a string path)
+    const data = await pdfParse(buffer);
+    if (!data || typeof data.text !== "string") {
+      throw new Error("pdf-parse returned unexpected result");
     }
+    return data.text;
+  } catch (err: any) {
+    console.error("extractTextFromPdf -> pdf-parse failed:", { message: err?.message, stack: err?.stack });
+    throw new Error(`pdf-parse error: ${err?.message ?? String(err)}`);
   }
-
-  return finalText.trim();
 }
