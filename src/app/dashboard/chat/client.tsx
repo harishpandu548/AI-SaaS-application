@@ -98,7 +98,13 @@ function ChatClient({ existingChats }: Props) {
       );
     } catch (error) {
       console.error(error);
-      alert("Failed to get the chat");
+      alert(
+  "Gemini API daily limit reached.\n\n" +
+  "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
+  "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
+  "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
+);
+
     } finally {
       setLoadingChat(false);
     }

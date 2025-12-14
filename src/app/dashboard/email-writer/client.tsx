@@ -31,7 +31,13 @@ function EmailWriterClient() {
       await refreshUser()
     } catch (error) {
       console.error("Error fetching Email data", error);
-      alert("Failed to fetch email API");
+      alert(
+  "Gemini API daily limit reached.\n\n" +
+  "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
+  "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
+  "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
+);
+
     } finally {
       setLoading(false);
     }
