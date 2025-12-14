@@ -62,8 +62,8 @@ export default async function RootLayout({
         <CustomSessionProvider>
           {/* ✅ GLOBAL USER CONTEXT */}
           <UserProvider
-            initialName={user?.name}
-            initialRole={user?.role}
+            initialName={user?.name ?? undefined}
+            initialRole={user?.role ?? undefined}
             initialPlan={user?.plan ?? "FREE"}
             initialCredits={user?.credits ?? 0}
           >
