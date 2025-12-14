@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/user-context";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 
 type ChatSummary = {
   id: string;
@@ -32,11 +33,11 @@ function ChatClient({ existingChats }: Props) {
   ]);
 
   const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false); 
+  const [sending, setSending] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chatList, setChatList] = useState(existingChats);
-  const {refreshUser}=useUser()
+  const { refreshUser } = useUser();
 
   // delete the chat
   async function handleDeleteChat(id: string) {
@@ -99,12 +100,11 @@ function ChatClient({ existingChats }: Props) {
     } catch (error) {
       console.error(error);
       alert(
-  "Gemini API daily limit reached.\n\n" +
-  "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
-  "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
-  "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
-);
-
+        "Gemini API daily limit reached.\n\n" +
+          "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
+          "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
+          "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
+      );
     } finally {
       setLoadingChat(false);
     }
@@ -135,7 +135,7 @@ function ChatClient({ existingChats }: Props) {
       });
 
       const data = res.data;
-       await refreshUser();
+      await refreshUser();
       // router.refresh();
       if (data.chatId && !chatId) {
         setChatId(data.chatId);
@@ -185,7 +185,8 @@ function ChatClient({ existingChats }: Props) {
             AI Assistant
           </h1>
           <p className="text-zinc-600 mt-2 max-w-xl mx-auto">
-            Chat with your personal AI assistant. Your conversations are saved automatically.
+            Chat with your personal AI assistant. Your conversations are saved
+            automatically.
           </p>
         </motion.header>
 
@@ -209,7 +210,8 @@ function ChatClient({ existingChats }: Props) {
                 setMessages([
                   {
                     role: "assistant",
-                    content: "Hey I am your assistant. How can i help you today",
+                    content:
+                      "Hey I am your assistant. How can i help you today",
                   },
                 ]);
               }}
@@ -223,9 +225,7 @@ function ChatClient({ existingChats }: Props) {
               + New Chat
             </button>
 
-            <h2 className="font-semibold text-zinc-800 mb-3">
-              Your chats
-            </h2>
+            <h2 className="font-semibold text-zinc-800 mb-3">Your chats</h2>
 
             <ul className="space-y-2 overflow-y-auto">
               {chatList.map((chat) => (
@@ -280,7 +280,9 @@ function ChatClient({ existingChats }: Props) {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${
+                    m.role === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
                     className={`
@@ -292,7 +294,13 @@ function ChatClient({ existingChats }: Props) {
                       }
                     `}
                   >
-                    {m.content}
+                    {m.role === "assistant" ? (
+                      <article className="prose prose-sm max-w-none text-zinc-800">
+                        <ReactMarkdown>{m.content}</ReactMarkdown>
+                      </article>
+                    ) : (
+                      <span>{m.content}</span>
+                    )}
                   </div>
                 </div>
               ))}
