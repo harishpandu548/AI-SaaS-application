@@ -1,5 +1,5 @@
-// src/lib/pdf.ts
-// Buffer-only wrapper for pdf-parse to avoid any file-path handling by the library.
+
+// buffer-only wrapper for pdf parse to avoid any file path handling by the library.
 
 export async function extractTextFromPdf(input: Buffer | ArrayBuffer | Uint8Array): Promise<string> {
   // Convert to Buffer if needed
@@ -18,7 +18,7 @@ export async function extractTextFromPdf(input: Buffer | ArrayBuffer | Uint8Arra
     throw new Error("extractTextFromPdf: buffer is empty");
   }
 
-  // defensive check — PDF files start with "%PDF"
+  // defensive check if PDF files start with "%PDF"
   const header = buffer.subarray(0, 4).toString("utf8");
   if (header !== "%PDF") {
     throw new Error("extractTextFromPdf: uploaded file is not a valid PDF");
@@ -29,7 +29,7 @@ export async function extractTextFromPdf(input: Buffer | ArrayBuffer | Uint8Arra
   const pdfParse = pdfParseModule.default || pdfParseModule;
 
   try {
-    // IMPORTANT: pass Buffer (never pass a string path)
+    // pass Buffer (never pass a string path)
     const data = await pdfParse(buffer);
     if (!data || typeof data.text !== "string") {
       throw new Error("pdf-parse returned unexpected result");

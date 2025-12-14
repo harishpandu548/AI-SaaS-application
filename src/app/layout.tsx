@@ -30,10 +30,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ Get session on server
+  // get session on server
   const session = await getServerAuthSession();
 
-  // ✅ Fetch user from DB if logged in
+  // fetch user from DB if logged in
   let user = null;
   if (session?.user?.email) {
     user = await prisma.user.findUnique({
@@ -58,19 +58,19 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
 
-        {/* ✅ NextAuth session */}
+        {/* nextAuth session */}
         <CustomSessionProvider>
-          {/* ✅ GLOBAL USER CONTEXT */}
+          {/* global user context */}
           <UserProvider
             initialName={user?.name ?? undefined}
             initialRole={user?.role ?? undefined}
             initialPlan={user?.plan ?? "FREE"}
             initialCredits={user?.credits ?? 0}
           >
-            {/* ✅ Single global navbar */}
+           
             <Header />
 
-            {/* ✅ All pages */}
+            {/* all pages render here */}
             {children}
           </UserProvider>
         </CustomSessionProvider>

@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "uploaded_file_is_not_pdf" }, { status: 400 });
     }
 
-    // dynamic import pdf-parse (buffer-only)
+    // dynamic import pdf parse
     const pdfParseMod: any = await import("pdf-parse").catch((e) => {
       console.error("Could not import pdf-parse:", e);
       throw new Error("internal_parser_missing");

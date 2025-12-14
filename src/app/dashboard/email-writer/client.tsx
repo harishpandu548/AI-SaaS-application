@@ -37,7 +37,7 @@ function EmailWriterClient() {
     }
   }
 
-  /* 🔥 AUTO SCROLL WHEN EMAIL IS READY */
+  // auto scroll
   useEffect(() => {
     if (email && resultRef.current) {
       const offset = 120;
@@ -58,7 +58,7 @@ function EmailWriterClient() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-12 overflow-hidden"
     >
-      {/* 🌈 AURORA BACKGROUND */}
+      {/* bg main theme BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
@@ -66,7 +66,7 @@ function EmailWriterClient() {
       </div>
 
       <div className="relative max-w-4xl mx-auto">
-        {/* HEADER */}
+      
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ function EmailWriterClient() {
           </p>
         </motion.header>
 
-        {/* 🌊 GLASS FORM PANEL */}
+  
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ function EmailWriterClient() {
           <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
 
           <form onSubmit={handleSubmit} className="relative space-y-6">
-            {/* SUBJECT */}
+        
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Email Subject
@@ -131,7 +131,6 @@ function EmailWriterClient() {
               />
             </div>
 
-            {/* DETAILS */}
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Email Details
@@ -156,7 +155,6 @@ function EmailWriterClient() {
               />
             </div>
 
-            {/* TONE + BUTTON */}
             <div className="flex flex-wrap gap-6 items-end pt-4 border-t border-white/30">
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-2">
@@ -205,7 +203,6 @@ function EmailWriterClient() {
           </form>
         </motion.section>
 
-        {/* RESULT */}
         <AnimatePresence>
           {email && (
             <motion.section
@@ -271,7 +268,7 @@ function EmailWriterClient() {
           )}
         </AnimatePresence>
 
-        {/* EMPTY STATE */}
+   
         {!email && !loading && (
           <p className="mt-6 text-sm text-zinc-500 text-center">
             Tip: Add more details for better, more personalized emails.

@@ -1,20 +1,17 @@
-// src/app/dashboard/loading.tsx
-
 export default function DashboardLoading() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
       
-      {/* 🌈 GLOBAL AURORA */}
+     {/* theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-48 -left-48 h-[600px] w-[600px] rounded-full bg-pink-400/20 blur-3xl" />
         <div className="absolute top-1/4 -right-48 h-[600px] w-[600px] rounded-full bg-purple-400/20 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-3xl" />
       </div>
 
-      {/* CONTENT */}
+      {/*content */}
       <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-16 animate-pulse">
 
-        {/* TOP BAR PLACEHOLDER */}
         <div className="flex items-center justify-between mb-12">
           <div className="h-4 w-32 rounded bg-zinc-200" />
           <div className="flex gap-3">
@@ -23,7 +20,6 @@ export default function DashboardLoading() {
           </div>
         </div>
 
-        {/* MAIN GLASS SHELL */}
         <div className="
           relative rounded-[32px] p-8
           bg-white/55 backdrop-blur-2xl
@@ -34,7 +30,6 @@ export default function DashboardLoading() {
           {/* inner shimmer */}
           <div className="absolute inset-0 rounded-[32px] bg-gradient-to-tr from-white/40 via-transparent to-white/30 opacity-40" />
 
-          {/* CONTENT BLOCKS */}
           <div className="relative space-y-8">
             <div className="h-6 w-1/3 rounded bg-zinc-200" />
 

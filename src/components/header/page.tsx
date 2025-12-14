@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/user-context";
 
-/* ---------------------------- SKELETON ---------------------------- */
+// skeleton loader
 
 function HeaderSkeleton() {
   return (
@@ -24,7 +24,7 @@ function HeaderSkeleton() {
   );
 }
 
-/* ---------------------------- HEADER ---------------------------- */
+// header
 
 function Header() {
   const pathname = usePathname();
@@ -50,14 +50,14 @@ function Header() {
         shadow-[0_10px_40px_rgba(168,85,247,0.15)]
       "
     >
-      {/* AURORA */}
+      {/* theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -left-32 w-[300px] h-[300px] bg-pink-400/20 blur-3xl rounded-full" />
         <div className="absolute -top-24 right-0 w-[300px] h-[300px] bg-purple-400/20 blur-3xl rounded-full" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-        {/* LOGO */}
+        
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -75,7 +75,7 @@ function Header() {
           </Link>
         </motion.div>
 
-        {/* NAV */}
+        {/* navbar */}
         <motion.nav
           initial="hidden"
           animate="visible"
@@ -88,7 +88,7 @@ function Header() {
           }}
           className="flex items-center gap-3"
         >
-          {/* Pricing */}
+         {/* pricing */}
           <motion.div
             variants={{
               hidden: { y: -6, opacity: 0 },
@@ -107,7 +107,7 @@ function Header() {
             </Link>
           </motion.div>
 
-          {/* Dashboard (only logged in) */}
+          {/* dashboard showing only for logged in users */}
           {session && (
             <motion.div
               variants={{
@@ -128,7 +128,7 @@ function Header() {
             </motion.div>
           )}
 
-          {/* USER AREA */}
+          
           {session && (
             <motion.div
               variants={{
@@ -137,21 +137,21 @@ function Header() {
               }}
               className="flex items-center gap-2 ml-2"
             >
-              {/* Plan */}
+              {/* plan */}
               <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/40 border text-indigo-600">
                 {plan}
               </span>
 
-              {/* Credits */}
+              {/* credits */}
               <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/40 border text-purple-600">
                 {plan === "PRO" ? "∞" : credits} 💎
               </span>
 
-              {/* Admin (ONLY when logged in) */}
+            {/* admin button showing only when logged in */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
-                  className="ml-2"   // 👈 moves Admin slightly to the right
+                  className="ml-2"   
 
               >
                 <Link
@@ -162,7 +162,7 @@ function Header() {
                 </Link>
               </motion.div>
 
-              {/* Sign out – standout */}
+              {/* sign out */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
@@ -183,7 +183,7 @@ function Header() {
             </motion.div>
           )}
 
-          {/* Sign in (logged out only) */}
+          {/* sign for showed for new user or users want to login */}
           {!session && (
             <motion.div
               variants={{

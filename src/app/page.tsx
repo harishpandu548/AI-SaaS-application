@@ -18,16 +18,15 @@ export default function LandingPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
-      {/* 🌈 AURORA BACKGROUND */}
+{/* bg theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-pink-400/25 blur-3xl" />
         <div className="absolute top-1/4 -right-40 h-[600px] w-[600px] rounded-full bg-purple-400/25 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-[500px] w-[500px] rounded-full bg-cyan-400/20 blur-3xl" />
       </div>
 
-      {/* HERO */}
+      {/* hero */}
       <section className="relative max-w-7xl mx-auto px-6 pt-14 pb-28 grid gap-16 lg:grid-cols-2 items-start">
-        {/* LEFT CONTENT */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,7 +49,6 @@ export default function LandingPage() {
             powered by Gemini AI. Built for creators, founders and developers.
           </p>
 
-          {/* FEATURE CHIPS */}
           <div className="flex flex-wrap gap-3 pt-4">
             {[
               "🧠 Gemini AI",
@@ -70,7 +68,6 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* RIGHT GLASS CARD */}
         <motion.aside
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -78,14 +75,12 @@ export default function LandingPage() {
           whileHover={{ y: -6 }}
           className="relative lg:mt-12"
         >
-          {/* GLOW */}
           <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-70 blur-md" />
 
-          {/* CARD */}
           <div className="relative rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl p-7">
             {session ? (
               <div className="space-y-6">
-                {/* USER */}
+              {/* user */}
                 <div className="flex items-center gap-4">
                   <div
                     className="
@@ -109,7 +104,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* STATS */}
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-xl bg-white/70 p-4 text-center border">
                     <p className="text-xs text-zinc-500">Plan</p>
@@ -128,7 +123,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* ACTIONS */}
+            
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <Link
                     href="/dashboard"
@@ -161,7 +156,7 @@ export default function LandingPage() {
                 </div>
               </div>
             ) : (
-              /* LOGGED OUT */
+              // logged out
               <div className="space-y-6">
                 <p className="text-lg font-semibold text-zinc-800">
                   Welcome back

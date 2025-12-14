@@ -15,7 +15,7 @@ async function PricingPage() {
 
   return (
     <main className="relative min-h-screen px-6 pt-8 pb-16 bg-[#fafafa] overflow-hidden">
-      {/* Aurora background */}
+      {/* our bg theme */}
       <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-pink-400/20 blur-3xl" />
       <div className="absolute top-20 -right-40 h-[520px] w-[520px] rounded-full bg-purple-400/20 blur-3xl" />
 
@@ -31,7 +31,7 @@ async function PricingPage() {
           </p>
         </header>
 
-        {/* Pricing cards */}
+        {/* pricing cards */}
         <section className="grid gap-8 md:grid-cols-2 items-stretch">
           {/* FREE */}
           <article
@@ -93,7 +93,7 @@ async function PricingPage() {
             hover:scale-[1.01]
           "
           >
-            {/* Glow ring */}
+          
             <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 blur-md opacity-50" />
 
             <div className="relative rounded-3xl bg-gradient-to-br from-pink-500 to-purple-600 text-white p-6">
@@ -138,7 +138,7 @@ async function PricingPage() {
           </article>
         </section>
 
-        {/* Test Cards (moved up + simplified) */}
+      {/* test cards */}
         <section
           id="test-cards"
           className="mt-8 max-w-3xl mx-auto rounded-2xl bg-white/80 backdrop-blur border border-purple-200 p-5"

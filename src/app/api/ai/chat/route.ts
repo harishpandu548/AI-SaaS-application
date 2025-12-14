@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  //fetch user to credits checking if credits having allow chating if not give a msg u dont have credits
+  //fetch user to credits checking if credits having allow chatting if not give a msg u don't have credits
   const user = await prisma.user.findUnique({
     where: { id: session.user?.id },
   });

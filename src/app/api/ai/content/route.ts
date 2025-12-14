@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
 
-  // 1️⃣ AUTH CHECK
+  // authentication checking
   const session = await getServerAuthSession();
   if (!session) {
     return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 2️⃣ GET USER FROM SESSION
+  // get user from session
   const userId = session.user.id;
 
   const user = await prisma.user.findUnique({
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 3️⃣ CHECK USER CREDITS (FREE PLAN)
+  // check the credits
   if (user.plan === "FREE" && user.credits <= 0) {
     return NextResponse.json(
       {
@@ -39,10 +39,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 4️⃣ PARSE REQUEST BODY
   const { topic, details } = await req.json();
 
-  // 5️⃣ VALIDATION
+
   if (!topic || !details) {
     return NextResponse.json(
       { error: "Fields are empty but required" },
@@ -51,22 +50,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // 6️⃣ GENERATE CAPTIONS
+    
     const caption = await generateCaptions(topic, details);
 
-    // 7️⃣ DEDUCT CREDIT (FREE USERS ONLY)
     if (user.plan === "FREE") {
       await prisma.user.update({
         where: { id: userId },
         data: {
           credits: {
-            decrement: 1, // ✅ SAFE & ATOMIC
+            decrement: 1,
           },
         },
       });
     }
 
-    // 8️⃣ RETURN RESPONSE
     return NextResponse.json({ caption }, { status: 200 });
 
   } catch (error) {

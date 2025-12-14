@@ -17,7 +17,7 @@ type Props = {
 };
 
 function AdminClient({ users: initialUsers }: Props) {
-  //just re-naming the users to initial users so same name clash wont occur so from now what the users we got from client page will be stores in initial users
+  //just re naming the users to initial users so same name clash wont occur so from now what the users we got from client page will be stores in initial users
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -48,7 +48,7 @@ function AdminClient({ users: initialUsers }: Props) {
 
   return (
     <main className="relative min-h-screen px-6 py-12 overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
-      {/* 🌈 AURORA BACKGROUND */}
+      {/* theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
@@ -56,10 +56,9 @@ function AdminClient({ users: initialUsers }: Props) {
       </div>
 
       <div className="relative max-w-7xl mx-auto animate-fade-in">
-        {/* HEADER */}
-       {/* HEADER */}
+      
 <header className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-  {/* LEFT: TITLE */}
+
   <div>
     <h1 className="text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
       Admin Panel
@@ -69,7 +68,6 @@ function AdminClient({ users: initialUsers }: Props) {
     </p>
   </div>
 
-  {/* RIGHT: DEMO NOTE */}
 <div className="
   w-full max-w-md
   lg:ml-12        /* 👈 pulls it left */
@@ -97,8 +95,6 @@ function AdminClient({ users: initialUsers }: Props) {
   </div>
 </header>
 
-
-        {/* 🌊 GLASS TABLE CARD */}
         <div
           className="
             relative rounded-3xl
@@ -200,7 +196,7 @@ function AdminClient({ users: initialUsers }: Props) {
                         {u.role === "ADMIN" ? "Make USER" : "Make ADMIN"}
                       </button>
 
-                      {/* Toggle plan */}
+                      {/* toggle plan */}
                       <button
                         disabled={loadingId === u.id}
                         onClick={() =>
@@ -220,7 +216,7 @@ function AdminClient({ users: initialUsers }: Props) {
                         {u.plan === "PRO" ? "Set FREE" : "Set PRO"}
                       </button>
 
-                      {/* Reset credits */}
+                      {/* reset credits */}
                       <button
                         disabled={loadingId === u.id}
                         onClick={() =>

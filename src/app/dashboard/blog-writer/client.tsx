@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/user-context";
 
-
 function BlogWriterClient() {
   const [topic, setTopic] = useState("");
   const [tone, setTone] = useState("friendly");
@@ -15,8 +14,7 @@ function BlogWriterClient() {
   const [result, setResult] = useState("");
   const [copied, setCopied] = useState(false);
   const router = useRouter();
-  const {refreshUser}=useUser()
-
+  const { refreshUser } = useUser();
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,8 +28,7 @@ function BlogWriterClient() {
       setResult(res.data.blog);
       await refreshUser();
 
-      router.refresh(); // 🔥 THIS FORCES DASHBOARD TO REFETCH FROM DB
-
+      router.refresh(); // forces dashboard to refetch from db
     } catch (error) {
       console.error("Failed to call AI API", error);
       alert("Failed to call AI API");
@@ -40,7 +37,7 @@ function BlogWriterClient() {
     }
   }
 
-  // 🔥 AUTO SCROLL (OFFSET)
+  // auto scroll when content generated
   useEffect(() => {
     if (result && resultRef.current) {
       const offset = 120;
@@ -61,7 +58,7 @@ function BlogWriterClient() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-12 overflow-hidden"
     >
-      {/* 🌈 AURORA BACKGROUND */}
+      {/*  bg main theme BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
@@ -69,8 +66,6 @@ function BlogWriterClient() {
       </div>
 
       <div className="relative max-w-4xl mx-auto">
-
-        {/* HEADER */}
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,13 +81,12 @@ function BlogWriterClient() {
           </p>
         </motion.header>
 
-        {/* 🌊 GLASS FORM PANEL */}
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.45, ease: "easeOut" }}
           whileHover={{ y: -4 }}
-         className="
+          className="
   relative rounded-3xl p-8
 
   /* glass base */
@@ -112,13 +106,12 @@ function BlogWriterClient() {
   hover:ring-2 hover:ring-pink-500/50
   hover:shadow-[0_0_60px_rgba(168,85,247,0.35)]
 "
-
         >
           {/* subtle inner glow */}
           <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
 
           <form onSubmit={handleSubmit} className="relative space-y-6">
-            {/* Topic */}
+            {/* topic */}
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Blog Topic
@@ -128,7 +121,7 @@ function BlogWriterClient() {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="e.g. How to build AI SaaS with Next.js"
-               className="
+                className="
   w-full rounded-xl
 
   /* glass */
@@ -146,11 +139,9 @@ function BlogWriterClient() {
   focus:border-transparent
   focus:ring-2 focus:ring-pink-500/60
 "
-
               />
             </div>
 
-            {/* Tone + Button */}
             <div className="flex flex-wrap gap-6 items-end pt-4 border-t border-white/30">
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-2">
@@ -159,7 +150,7 @@ function BlogWriterClient() {
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                 className="
+                  className="
   rounded-xl
 
   bg-white/40 backdrop-blur
@@ -175,7 +166,6 @@ function BlogWriterClient() {
   focus:border-transparent
   focus:ring-2 focus:ring-pink-500/60
 "
-
                 >
                   <option value="friendly">Friendly</option>
                   <option value="professional">Professional</option>
@@ -205,16 +195,16 @@ function BlogWriterClient() {
           </form>
         </motion.section>
 
-        {/* RESULT */}
+        {/* result */}
         <AnimatePresence>
           {result && (
             <motion.section
-  ref={resultRef}
-  initial={{ opacity: 0, y: 30, scale: 0.98 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.45, ease: "easeOut" }}
-  className="
+              ref={resultRef}
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className="
     mt-12 relative rounded-3xl p-8 space-y-6
 
     /* glass base */
@@ -234,9 +224,9 @@ function BlogWriterClient() {
     hover:ring-2 hover:ring-pink-500/50
     hover:shadow-[0_0_60px_rgba(168,85,247,0.35)]
   "
->
-  {/* subtle inner line */}
-  <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
+            >
+              {/* subtle inner line */}
+              <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
 
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -293,7 +283,6 @@ function BlogWriterClient() {
           )}
         </AnimatePresence>
 
-        {/* EMPTY STATE */}
         {!result && !loading && (
           <p className="mt-6 text-sm text-zinc-500 text-center">
             Tip: Be specific in the topic and choose{" "}

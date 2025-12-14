@@ -14,7 +14,7 @@ declare global {
 function RazorpayUpgradeButton() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { refreshUser } = useUser(); // 🔥 important
+  const { refreshUser } = useUser();
 
   async function handleUpgrade() {
     try {
@@ -35,11 +35,11 @@ function RazorpayUpgradeButton() {
         name: "AI SAAS Platform",
         description: "PRO Users",
 
-        // ✅ runs ONLY after successful payment
+        // runs only after successful payment
         handler: async function (response: any) {
           console.log("Payment success", response);
           alert("Payment successful!");
-          // 🔄 ensure DB + session + context are fresh
+          // ensure db + session + context are fresh
           // await refreshUser();     // updates plan + credits in context
           router.push("/dashboard");
           // router.refresh();        // refreshes server components

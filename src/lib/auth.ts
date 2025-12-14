@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
           };
         }
 
-        // If credentials don't match, return null → error on login page
+        // If credentials don't match, return null and error on login page
         console.log("Invalid credentials");
         return null;
       },

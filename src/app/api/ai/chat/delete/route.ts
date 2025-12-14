@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   await prisma.chatMessage.deleteMany({
     where: { chatId },
   });
-  //   now chat will be emplty so now delete the chat
+  //   now chat will be empty so now delete the chat
   await prisma.chat.delete({
     where: { id: chatId },
   });

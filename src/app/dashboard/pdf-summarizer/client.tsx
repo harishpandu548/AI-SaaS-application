@@ -55,7 +55,7 @@ export default function PdfSummarizerClient() {
     }
   }
 
-  // 🔥 AUTO SCROLL TO SUMMARY
+  // auto scrollig when content generated TO SUMMARY
   useEffect(() => {
     if (summary && resultRef.current) {
       const offset = 120;
@@ -73,7 +73,7 @@ export default function PdfSummarizerClient() {
       transition={{ duration: 0.4 }}
       className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-12 overflow-hidden"
     >
-      {/* 🌈 AURORA BACKGROUND */}
+      {/*  bg main theme BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
@@ -82,7 +82,7 @@ export default function PdfSummarizerClient() {
 
       <div className="relative max-w-3xl mx-auto">
 
-        {/* HEADER */}
+        
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ export default function PdfSummarizerClient() {
           </p>
         </motion.header>
 
-        {/* 🌊 GLASS FORM */}
+
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export default function PdfSummarizerClient() {
 
           <form onSubmit={handleSubmit} className="relative space-y-6">
 
-            {/* FILE */}
+      
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Upload PDF
@@ -153,7 +153,7 @@ export default function PdfSummarizerClient() {
               )}
             </div>
 
-            {/* INSTRUCTIONS */}
+      
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Extra Instructions (optional)
@@ -177,14 +177,14 @@ export default function PdfSummarizerClient() {
               />
             </div>
 
-            {/* ERROR */}
+      
             {error && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
                 {error}
               </p>
             )}
 
-            {/* SUBMIT */}
+      
             <button
               type="submit"
               disabled={loading || !file}
@@ -202,7 +202,7 @@ export default function PdfSummarizerClient() {
           </form>
         </motion.section>
 
-        {/* SUMMARY */}
+
         <AnimatePresence>
           {summary && (
             <motion.section

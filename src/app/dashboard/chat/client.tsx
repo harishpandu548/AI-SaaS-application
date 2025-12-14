@@ -32,7 +32,7 @@ function ChatClient({ existingChats }: Props) {
   ]);
 
   const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false); // 🔥 FIX typing bug
+  const [sending, setSending] = useState(false); 
   const [loadingChat, setLoadingChat] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chatList, setChatList] = useState(existingChats);
@@ -134,7 +134,7 @@ function ChatClient({ existingChats }: Props) {
       if (data.chatId && !chatId) {
         setChatId(data.chatId);
 
-        // 🔥 FIX untitled chat problem
+        // fixing untitled chat name
         setChatList((prev) => [
           {
             id: data.chatId,
@@ -162,14 +162,13 @@ function ChatClient({ existingChats }: Props) {
 
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-8 overflow-hidden">
-      {/* 🌈 AURORA BACKGROUND */}
+      {/*  bg main theme BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-purple-400/25 blur-3xl rounded-full" />
       </div>
 
       <div className="relative max-w-6xl mx-auto">
-        {/* HEADER */}
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,7 +184,7 @@ function ChatClient({ existingChats }: Props) {
         </motion.header>
 
         <div className="flex gap-6 h-[70vh]">
-          {/* LEFT: chat history list */}
+          {/* left chat history list */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -244,7 +243,7 @@ function ChatClient({ existingChats }: Props) {
                     {chat.title || "New chat"}
                   </span>
 
-                  {/* DELETE BUTTON */}
+                  {/* delete button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -259,7 +258,7 @@ function ChatClient({ existingChats }: Props) {
             </ul>
           </motion.div>
 
-          {/* RIGHT: current chat */}
+          {/*right side current chat*/}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

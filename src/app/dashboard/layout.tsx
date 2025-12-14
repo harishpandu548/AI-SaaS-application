@@ -1,4 +1,3 @@
-// src/app/dashboard/layout.tsx
 import { getServerAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -21,7 +20,7 @@ export default async function DashboardLayout({
       credits: true,
     },
   });
-  // 🔥 USER DELETED FROM DB → FORCE LOGOUT
+  //  if user deleted from db then force logout
 if (!user) {
   redirect("/api/auth/signout?callbackUrl=/");
 }

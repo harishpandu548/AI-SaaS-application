@@ -2,7 +2,7 @@ export default function HomeSkeleton() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-cyan-100">
       
-      {/* Navbar Skeleton */}
+   {/* skeleton for navbar */}
       <div className="h-16 px-8 flex items-center justify-between backdrop-blur bg-white/60 border-b">
         <div className="h-6 w-24 bg-gray-300/70 rounded-md animate-pulse" />
 
@@ -14,10 +14,10 @@ export default function HomeSkeleton() {
         </div>
       </div>
 
-      {/* Hero Section */}
+     {/* hero section */}
       <div className="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        {/* Left Content */}
+        {/* {left side */}
         <div className="space-y-6">
           <div className="h-8 w-48 bg-gray-300/70 rounded-full animate-pulse" />
 
@@ -33,11 +33,11 @@ export default function HomeSkeleton() {
           </div>
         </div>
 
-        {/* Right Card */}
+       {/* right side */}
         <div className="relative">
           <div className="rounded-3xl p-8 bg-white/60 backdrop-blur-xl shadow-xl space-y-6 animate-pulse">
             
-            {/* Profile */}
+            {/* profile */}
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 bg-gray-300/70 rounded-full" />
               <div className="space-y-2">
@@ -46,13 +46,12 @@ export default function HomeSkeleton() {
               </div>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-2 gap-4">
               <div className="h-16 bg-gray-300/70 rounded-xl" />
               <div className="h-16 bg-gray-300/70 rounded-xl" />
             </div>
 
-            {/* Button */}
+        
             <div className="h-12 bg-gray-300/70 rounded-xl" />
           </div>
         </div>

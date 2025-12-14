@@ -37,7 +37,7 @@ function ContentGeneratorClient() {
     }
   }
 
-  // 🔥 AUTO SCROLL TO RESULT
+  // auto scrollig when content generated
   useEffect(() => {
     if (content && resultRef.current) {
       const offset = 120;
@@ -55,7 +55,7 @@ function ContentGeneratorClient() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-12 overflow-hidden"
     >
-      {/* 🌈 AURORA BACKGROUND */}
+      {/*  bg main theme BACKGROUND */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
         <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
@@ -64,7 +64,7 @@ function ContentGeneratorClient() {
 
       <div className="relative max-w-3xl mx-auto">
 
-        {/* HEADER */}
+      
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ function ContentGeneratorClient() {
           </p>
         </motion.header>
 
-        {/* 🌊 GLASS FORM */}
+     
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -107,7 +107,7 @@ function ContentGeneratorClient() {
 
           <form onSubmit={handleSubmit} className="relative space-y-6">
 
-            {/* TOPIC */}
+    
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Topic / Product
@@ -131,7 +131,6 @@ function ContentGeneratorClient() {
               />
             </div>
 
-            {/* DETAILS */}
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Platform / Style
@@ -155,7 +154,6 @@ function ContentGeneratorClient() {
               />
             </div>
 
-            {/* SUBMIT */}
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="submit"
@@ -174,7 +172,6 @@ function ContentGeneratorClient() {
           </form>
         </motion.section>
 
-        {/* RESULT */}
         <AnimatePresence>
           {content && (
             <motion.section
@@ -230,7 +227,7 @@ function ContentGeneratorClient() {
           )}
         </AnimatePresence>
 
-        {/* EMPTY */}
+    
         {!content && !loading && (
           <p className="mt-6 text-sm text-zinc-500 text-center">
             Tip: Mention platform + tone for best results.

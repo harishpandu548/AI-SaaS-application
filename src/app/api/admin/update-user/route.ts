@@ -28,7 +28,7 @@ export async function POST(req:NextRequest) {
             dataToUpdate.credits=credits
         }
 
-        //if admin removes user or free etc and didnot typed new value we are giving him the error
+        //if admin removes user or free etc and did not typed new value we are giving him the error
          if (Object.keys(dataToUpdate).length === 0) {
     return NextResponse.json(
       { error: "No valid fields to update" },

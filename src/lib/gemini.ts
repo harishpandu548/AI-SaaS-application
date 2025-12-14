@@ -57,7 +57,6 @@ Requirements:
   return text;
 }
 
-
 //pdf summarizer
 export async function summarizePdfText(
   pdfText: string,
@@ -84,6 +83,191 @@ PDF content:
   return text;
 }
 
+//seo writer
+export async function generateSeoAnalysis(content: string) {
+  const prompt = `
+You are an SEO expert.
+
+Analyze the following content for SEO and return:
+
+1. SEO Score (0-100)
+2. Meta Title
+3. Meta Description
+4. Primary Keywords (comma separated)
+5. SEO Improvement Suggestions (bullet points)
+
+Content:
+"""
+${content}
+"""
+
+Respond in clean markdown format.
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  return response.text();
+}
+
+//youtube script writer
+export async function generateYoutubeScript(
+  topic: string,
+  duration: string,
+  tone: string
+) {
+  const prompt = `
+You are a professional YouTube script writer.
+
+Create a YouTube video script with the following details:
+
+Topic: "${topic}"
+Duration: ${duration}
+Tone: ${tone}
+
+Structure the script clearly using headings:
+
+1. Hook (first 5–10 seconds)
+2. Intro
+3. Main Content (broken into sections)
+4. Call To Action (CTA)
+
+Use simple language and engaging storytelling.
+Respond in clean markdown format.
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+//code explanation
+export async function generateCodeExplanation(code: string, language: string) {
+  const prompt = `
+You are an expert software engineer and teacher.
+
+Explain the following ${language} code in simple, beginner-friendly language.
+
+Code:
+"""
+${code}
+"""
+
+Requirements:
+- Explain what the code does
+- Explain key parts step-by-step
+- Mention any best practices or improvements if needed
+- Keep it clear and structured with headings
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  return response.text();
+}
+
+//fix grammer mistakes etc
+export async function generateGrammarFix(text: string, tone: string) {
+  const prompt = `
+You are an AI writing assistant.
+
+Task:
+- Fix grammar mistakes
+- Improve clarity
+- Rewrite the text in "${tone}" tone
+- Keep meaning the same
+- Make it sound natural and professional
+
+Text:
+"""
+${text}
+"""
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+//generate interview questions
+export async function generateInterviewQuestions(
+  role: string,
+  level: string,
+  type: string
+) {
+  const prompt = `
+You are an expert technical interviewer.
+
+Generate interview questions for:
+Role: ${role}
+Experience level: ${level}
+Question type: ${type}
+
+Requirements:
+- Well structured sections
+- Clear numbered questions
+- Real-world and practical
+- No answers, only questions
+- Professional interview tone
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+// ideas generator
+export async function generateIdeas(
+  topic: string,
+  category: string
+) {
+  const prompt = `
+You are an expert product strategist and creative thinker.
+
+Generate high-quality ideas based on:
+Topic: ${topic}
+Category: ${category}
+
+Requirements:
+- Clear headings
+- Numbered ideas
+- Practical and realistic
+- Short explanations for each idea
+- Professional tone
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+//MEETING NOTES GENERATOR
+export async function generateMeetingNotes(notes: string) {
+  const prompt = `
+You are an AI meeting assistant.
+
+Convert the following raw meeting notes into a structured format.
+
+OUTPUT FORMAT (use markdown):
+
+## 🧾 Meeting Summary
+- Short paragraph summary
+
+## 🗣️ Key Discussion Points
+- Bullet points
+
+## ✅ Action Items
+- Task + responsible person (if mentioned)
+
+## 📌 Decisions Made
+- Bullet points (if any)
+
+Meeting Notes:
+"""
+${notes}
+"""
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+
+
 // export async function summarizePdfText(pdfText:string,extraInstructions?:string) {
 //   const maxChars=8000;
 //   const trimmedText=pdfText.length>maxChars?pdfText.slice(0,8000):pdfText
@@ -96,7 +280,7 @@ PDF content:
 
 //   Task: Summarize the main ideas of this PDF in clear bullet points and short paragraphs.
 //   ${extraInstructions?`Extra instructions from user:${extraInstructions}`:""}
-  
+
 //   Requirements:
 //   - Use simple, clear language.
 //   - Highlight the key sections or topics.
@@ -108,5 +292,5 @@ PDF content:
 //   const response=result.response
 //   const text=response.text()
 //   return text
-  
+
 // }

@@ -7,13 +7,13 @@ export default function SignInPage() {
   return (
     <main className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
       
-      {/* 🌈 AURORA BACKGROUND */}
+      {/* our bg theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-pink-400/25 blur-3xl" />
         <div className="absolute top-1/3 -right-40 h-[500px] w-[500px] rounded-full bg-purple-400/25 blur-3xl" />
       </div>
 
-      {/* CARD */}
+      {/* card */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -29,7 +29,7 @@ export default function SignInPage() {
           text-center
         "
       >
-        {/* LOGO / TITLE */}
+        {/* logo and title */}
         <h1 className="text-3xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
           Welcome back
         </h1>
@@ -37,8 +37,7 @@ export default function SignInPage() {
         <p className="mt-2 text-zinc-600">
           Sign in to access your AI workspace
         </p>
-
-        {/* SIGN IN BUTTON */}
+{/* sign in button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           className="
@@ -53,7 +52,7 @@ export default function SignInPage() {
             transition
           "
         >
-          {/* Inline Google SVG → no image loading issues */}
+       
           <svg width="20" height="20" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.7 1.22 9.18 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.6 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
             <path fill="#4285F4" d="M46.98 24.55c0-1.57-.14-3.09-.4-4.55H24v9.02h12.94c-.56 3-2.23 5.53-4.75 7.24l7.73 6c4.51-4.17 7.06-10.31 7.06-17.71z"/>
@@ -64,7 +63,7 @@ export default function SignInPage() {
           <span>Sign in with Google</span>
         </button>
 
-        {/* FOOTER */}
+   
         <p className="mt-6 text-xs text-zinc-400">
           Secure authentication powered by Google
         </p>
