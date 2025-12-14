@@ -8,9 +8,9 @@ export default async function AdminPage() {
   if (!session) {
     redirect("/");
   }
-  if (session.user?.role !== "ADMIN") {
-    redirect("/");
-  }
+  // if (session.user?.role !== "ADMIN") {
+  //   redirect("/");
+  // }
   //fetch all the existing users
   const dbUsers = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },

@@ -1,39 +1,213 @@
-"use client"
-import React from 'react'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+"use client";
 
-function Header() {
-    const {data:session}=useSession()
-    const plan=session?.user?.plan || "FREE"
-    const credits=session?.user?.credits || "-"
-    console.log(plan,credits)
+import React from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { useUser } from "@/context/user-context";
+
+/* ---------------------------- SKELETON ---------------------------- */
+
+function HeaderSkeleton() {
   return (
-     <header className="w-full border-b bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-bold text-lg">SaaS AI</Link>
-
-        <nav className="flex items-center gap-4">
-          <Link href="/pricing" className="px-3 py-1 rounded hover:bg-slate-100">Pricing</Link>
-          <Link href="/dashboard" className="px-3 py-1 rounded hover:bg-slate-100">Dashboard</Link>
-
-          <div className="flex items-center gap-3">
-            <div title={`Plan: ${plan}`} className="px-2 py-1 rounded-full bg-slate-100 text-sm">
-              {plan}
-            </div>
-            <div title={`Credits`} className="px-2 py-1 rounded-full bg-slate-100 text-sm">
-              {credits} 💎
-            </div>
-            {session ? (
-              <Link href="/api/auth/signout" className="text-sm">Logout</Link>
-            ) : (
-              <Link href="/api/auth/signin" className="text-sm">Login</Link>
-            )}
-          </div>
-        </nav>
+    <div className="sticky top-0 z-50 w-full border-b border-white/30 bg-white/40 backdrop-blur-xl">
+      <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between animate-pulse">
+        <div className="h-5 w-24 rounded bg-zinc-200" />
+        <div className="flex items-center gap-3">
+          <div className="h-6 w-16 rounded-full bg-zinc-200" />
+          <div className="h-6 w-16 rounded-full bg-zinc-200" />
+          <div className="h-7 w-20 rounded-xl bg-zinc-200" />
+        </div>
       </div>
-    </header>
-  )
+    </div>
+  );
 }
 
-export default Header
+/* ---------------------------- HEADER ---------------------------- */
+
+function Header() {
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const { plan, credits } = useUser();
+
+  const isActive = (path: string) =>
+    pathname === path || pathname.startsWith(path + "/");
+
+  if (status === "loading") {
+    return <HeaderSkeleton />;
+  }
+
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: -18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="
+        sticky top-0 z-50 w-full
+        bg-white/30 backdrop-blur-2xl
+        border-b border-white/30
+        shadow-[0_10px_40px_rgba(168,85,247,0.15)]
+      "
+    >
+      {/* AURORA */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-24 -left-32 w-[300px] h-[300px] bg-pink-400/20 blur-3xl rounded-full" />
+        <div className="absolute -top-24 right-0 w-[300px] h-[300px] bg-purple-400/20 blur-3xl rounded-full" />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+        {/* LOGO */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Link
+            href="/"
+            className="
+              font-extrabold text-lg tracking-tight
+              bg-gradient-to-r from-pink-500 to-purple-600
+              bg-clip-text text-transparent
+            "
+          >
+            SaaS AI
+          </Link>
+        </motion.div>
+
+        {/* NAV */}
+        <motion.nav
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.08 },
+            },
+          }}
+          className="flex items-center gap-3"
+        >
+          {/* Pricing */}
+          <motion.div
+            variants={{
+              hidden: { y: -6, opacity: 0 },
+              visible: { y: 0, opacity: 1 },
+            }}
+          >
+            <Link
+              href="/pricing"
+              className={`px-3 py-1.5 rounded-xl text-sm transition-all ${
+                isActive("/pricing")
+                  ? "bg-gradient-to-r from-pink-500/25 to-purple-500/25 ring-1 ring-purple-400/40 text-purple-700 font-medium"
+                  : "text-zinc-700 hover:bg-white/40"
+              }`}
+            >
+              Pricing
+            </Link>
+          </motion.div>
+
+          {/* Dashboard (only logged in) */}
+          {session && (
+            <motion.div
+              variants={{
+                hidden: { y: -6, opacity: 0 },
+                visible: { y: 0, opacity: 1 },
+              }}
+            >
+              <Link
+                href="/dashboard"
+                className={`px-3 py-1.5 rounded-xl text-sm transition-all ${
+                  isActive("/dashboard")
+                    ? "bg-gradient-to-r from-pink-500/25 to-purple-500/25 ring-1 ring-purple-400/40 text-purple-700 font-medium"
+                    : "text-zinc-700 hover:bg-white/40"
+                }`}
+              >
+                Dashboard
+              </Link>
+            </motion.div>
+          )}
+
+          {/* USER AREA */}
+          {session && (
+            <motion.div
+              variants={{
+                hidden: { y: -6, opacity: 0 },
+                visible: { y: 0, opacity: 1 },
+              }}
+              className="flex items-center gap-2 ml-2"
+            >
+              {/* Plan */}
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/40 border text-indigo-600">
+                {plan}
+              </span>
+
+              {/* Credits */}
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/40 border text-purple-600">
+                {plan === "PRO" ? "∞" : credits} 💎
+              </span>
+
+              {/* Admin (ONLY when logged in) */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                  className="ml-2"   // 👈 moves Admin slightly to the right
+
+              >
+                <Link
+                  href="/dashboard/admin"
+                  className="px-3 py-1.5 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600 shadow-sm hover:shadow-md transition"
+                >
+                  Admin
+                </Link>
+              </motion.div>
+
+              {/* Sign out – standout */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Link
+                  href="/signout"
+                  className="
+                    ml-2 px-3 py-1.5 rounded-xl text-sm font-medium
+                    bg-gradient-to-r from-red-500 to-rose-600
+                    text-white shadow-sm
+                    hover:shadow-md
+                    transition
+                  "
+                >
+                  Sign out
+                </Link>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Sign in (logged out only) */}
+          {!session && (
+            <motion.div
+              variants={{
+                hidden: { y: -6, opacity: 0 },
+                visible: { y: 0, opacity: 1 },
+              }}
+            >
+              <Link
+                href="/signin"
+                className="
+                  ml-2 px-4 py-1.5 rounded-xl text-sm font-medium
+                  text-white
+                  bg-gradient-to-r from-pink-500 to-purple-600
+                  shadow-md
+                "
+              >
+                Sign in
+              </Link>
+            </motion.div>
+          )}
+        </motion.nav>
+      </div>
+    </motion.header>
+  );
+}
+
+export default Header;

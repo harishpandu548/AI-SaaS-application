@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         where: { id: userId },
         data: {
           plan: "PRO",
-          credits: 500,
+          // credits: 500,
         },
       });
 

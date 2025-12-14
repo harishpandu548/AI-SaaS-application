@@ -1,8 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { NextResponse } from "next/server";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useUser } from "@/context/user-context";
+import { useRouter } from "next/navigation";
 
 type ChatSummary = {
   id: string;
@@ -21,26 +23,30 @@ type Props = {
 
 function ChatClient({ existingChats }: Props) {
   //   console.log("user chats:", existingChats);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content: "Hey I am your assistant. How can i help you today",
     },
   ]);
+
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false); // 🔥 FIX typing bug
+  const [loadingChat, setLoadingChat] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chatList, setChatList] = useState(existingChats);
+  const {refreshUser}=useUser()
 
   // delete the chat
   async function handleDeleteChat(id: string) {
     if (!confirm("Are you sure you want to delete this chat?")) return;
     try {
-      const res = await axios.post("/api/ai/chat/delete", { chatId: id });
-      const data = res.data;
+      await axios.post("/api/ai/chat/delete", { chatId: id });
 
       //it removes chat but when on refresh only u see so lets manually do it when deleted also without refresh lets delete the chat with title
       setChatList((prev) => prev.filter((c) => c.id !== id));
+
       // if we deleted the currently open chat then reset to refresh
       if (id === chatId) {
         setChatId(null);
@@ -60,7 +66,7 @@ function ChatClient({ existingChats }: Props) {
   //load messages for a clicked chat
   async function handleselectChat(id: string) {
     try {
-      setLoading(true);
+      setLoadingChat(true);
       const res = await axios.get(`/api/ai/chat/history?chatId=${id}`);
       const data = res.data;
 
@@ -69,8 +75,9 @@ function ChatClient({ existingChats }: Props) {
         const role: Message["role"] =
           m.role === "assistant" ? "assistant" : "user";
         const content = String(m.content ?? "");
-        return { role, content } as Message;
+        return { role, content };
       });
+
       //update the state
       setChatId(id);
       setMessages(
@@ -93,18 +100,22 @@ function ChatClient({ existingChats }: Props) {
       console.error(error);
       alert("Failed to get the chat");
     } finally {
-      setLoading(false);
+      setLoadingChat(false);
     }
   }
 
   async function sendMessage() {
     if (!input.trim()) return;
 
-    const newMessages: Message[] = [...messages, { role: "user", content: input }];
+    const userMessage = input;
+    const newMessages: Message[] = [
+      ...messages,
+      { role: "user", content: userMessage },
+    ];
 
     setMessages(newMessages);
     setInput("");
-    setLoading(true);
+    setSending(true);
 
     const apiMessages = newMessages.filter((m, index) => {
       if (index === 0 && m.role === "assistant") return false;
@@ -114,145 +125,209 @@ function ChatClient({ existingChats }: Props) {
     try {
       const res = await axios.post("/api/ai/chat", {
         messages: apiMessages,
-        chatId: chatId ?? undefined, // send undefined instead of null
+        chatId: chatId ?? undefined,
       });
 
       const data = res.data;
-      console.log("CHAT API RESPONSE:", data);
-
+       await refreshUser();
+      // router.refresh();
       if (data.chatId && !chatId) {
         setChatId(data.chatId);
-        //now user clicked on new chat lets make the existing chat comes to left side
+
+        // 🔥 FIX untitled chat problem
         setChatList((prev) => [
           {
             id: data.chatId,
-            title: data.title || "Untitled chat",
-            createdAt: data.createdAt || new Date().toISOString(),
+            title: userMessage.slice(0, 30),
+            createdAt: new Date().toISOString(),
           },
           ...prev,
         ]);
       }
-      //ensure reply is string and matches msg type
-      const assistantReply: Message = {
-        role: "assistant",
-        content: String(data.reply ?? ""),
-      };
-      setMessages((prev) => [...prev, assistantReply]);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: String(data.reply ?? ""),
+        },
+      ]);
     } catch (error: any) {
       console.error(error);
-      const apiError = error?.response?.data;
-      if (apiError?.details?.includes("RetryInfo")) {
-        alert(
-          "AI is overloaded or rate limited. Please wait a bit and try again."
-        );
-      } else {
-        alert("Something went wrong with the AI. Please try again.");
-      }
+      alert("Something went wrong with the AI. Please try again.");
+    } finally {
+      setSending(false);
     }
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto h-[80vh] flex gap-4">
-      {/* LEFT: chat history list */}
+    <main className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-8 overflow-hidden">
+      {/* 🌈 AURORA BACKGROUND */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-pink-400/25 blur-3xl rounded-full" />
+        <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-purple-400/25 blur-3xl rounded-full" />
+      </div>
 
-      <div className="w-1/4 border rounded p-3 overflow-y-auto">
-        {/* new chat button to create a new chat */}
-        <button
-          onClick={() => {
-            setChatId(null);
-            setMessages([
-              {
-                role: "assistant",
-                content: "Hey I am your assistant. How can i help you today",
-              },
-            ]);
-          }}
+      <div className="relative max-w-6xl mx-auto">
+        {/* HEADER */}
+        <motion.header
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8 text-center"
         >
-          + New Chat
-        </button>
-
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">Your chats</h2>
-        </div>
-
-        {chatList.length === 0 && (
-          <p className="text-sm text-gray-500">
-            No chats yet. Start a new one!
+          <h1 className="text-4xl font-extrabold text-zinc-900">
+            AI Assistant
+          </h1>
+          <p className="text-zinc-600 mt-2 max-w-xl mx-auto">
+            Chat with your personal AI assistant. Your conversations are saved automatically.
           </p>
-        )}
+        </motion.header>
 
-        <ul className="space-y-2">
-          {chatList.map((chat) => (
-            <li
-              key={chat.id}
-              className={`border rounded px-2 py-1 text-sm hover:bg-gray-100 cursor-pointer flex justify-between items-center ${
-                chat.id === chatId ? "bg-gray-200" : ""
-              }`}
-            >
-              <span
-                onClick={() => handleselectChat(chat.id)}
-                className="flex-1"
-              >
-                {chat.title || "Untitled chat"}
-              </span>
-
-              {/* DELETE BUTTON */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // prevent opening chat when deleting
-                  handleDeleteChat(chat.id);
-                }}
-                className="ml-2 text-red-500 hover:text-red-700 text-xs"
-              >
-                ✕ Delete Chat
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* RIGHT: current chat */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto border p-4 rounded">
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className={`mb-4 ${m.role === "user" ? "text-right" : ""}`}
-            >
-              <div
-                className={`inline-block px-3 py-2 rounded-lg ${
-                  m.role === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-black"
-                }`}
-              >
-                {m.content}
-              </div>
-            </div>
-          ))}
-
-          {loading && (
-            <div className="mt-2 text-gray-500 italic">Thinking...</div>
-          )}
-        </div>
-
-        <div className="mt-4 flex gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="flex-1 border rounded px-3 py-2 text-black"
-            placeholder="Type your message..."
-          />
-          <button
-            onClick={sendMessage}
-            disabled={loading}
-            className="border px-4 py-2 rounded disabled:opacity-50"
+        <div className="flex gap-6 h-[70vh]">
+          {/* LEFT: chat history list */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="
+              w-1/4 rounded-3xl
+              bg-white/30 backdrop-blur-2xl
+              border border-purple-500/25
+              shadow-[0_20px_60px_rgba(168,85,247,0.25)]
+              p-4 flex flex-col
+            "
           >
-            Send
-          </button>
+            {/* new chat button to create a new chat */}
+            <button
+              onClick={() => {
+                setChatId(null);
+                setMessages([
+                  {
+                    role: "assistant",
+                    content: "Hey I am your assistant. How can i help you today",
+                  },
+                ]);
+              }}
+              className="
+                mb-4 py-2 rounded-xl
+                bg-gradient-to-r from-pink-500 to-purple-600
+                text-white font-medium
+                hover:shadow-[0_0_25px_rgba(168,85,247,0.45)]
+              "
+            >
+              + New Chat
+            </button>
+
+            <h2 className="font-semibold text-zinc-800 mb-3">
+              Your chats
+            </h2>
+
+            <ul className="space-y-2 overflow-y-auto">
+              {chatList.map((chat) => (
+                <li
+                  key={chat.id}
+                  className={`
+                    group rounded-xl px-3 py-2 text-sm cursor-pointer
+                    flex justify-between items-center
+                    transition-all
+                    ${
+                      chat.id === chatId
+                        ? "bg-gradient-to-r from-pink-500/30 to-purple-500/30 ring-2 ring-purple-400/40"
+                        : "bg-white/30 hover:bg-white/50"
+                    }
+                  `}
+                >
+                  <span
+                    onClick={() => handleselectChat(chat.id)}
+                    className="flex-1 truncate"
+                  >
+                    {chat.title || "New chat"}
+                  </span>
+
+                  {/* DELETE BUTTON */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteChat(chat.id);
+                    }}
+                    className="ml-2 text-red-500 text-xs opacity-0 group-hover:opacity-100 transition"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* RIGHT: current chat */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="
+              flex-1 rounded-3xl
+              bg-white/30 backdrop-blur-2xl
+              border border-purple-500/25
+              shadow-[0_20px_60px_rgba(168,85,247,0.25)]
+              flex flex-col
+            "
+          >
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`
+                      max-w-[75%] px-4 py-3 rounded-2xl text-sm
+                      ${
+                        m.role === "user"
+                          ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                          : "bg-white/70 text-zinc-800"
+                      }
+                    `}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+
+              {sending && (
+                <div className="text-zinc-500 italic text-sm">
+                  AI is thinking…
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-white/40 flex gap-3">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="
+                  flex-1 rounded-xl px-4 py-3
+                  bg-white/60 backdrop-blur
+                  border border-purple-500/30
+                  focus:outline-none
+                  focus:ring-2 focus:ring-pink-500/60
+                "
+                placeholder="Type your message..."
+              />
+              <button
+                onClick={sendMessage}
+                disabled={sending}
+                className="
+                  px-5 py-3 rounded-xl font-medium
+                  bg-gradient-to-r from-pink-500 to-purple-600
+                  text-white disabled:opacity-50
+                "
+              >
+                Send
+              </button>
+            </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

@@ -1,66 +1,181 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/user-context";
+
 
 function BlogWriterClient() {
   const [topic, setTopic] = useState("");
   const [tone, setTone] = useState("friendly");
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const {refreshUser}=useUser()
+
+
+  const resultRef = useRef<HTMLDivElement | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setloading(true);
+    setLoading(true);
     setResult("");
+
     try {
       const res = await axios.post("/api/ai/blog", { topic, tone });
       setResult(res.data.blog);
+      await refreshUser();
+
+      router.refresh(); // 🔥 THIS FORCES DASHBOARD TO REFETCH FROM DB
+
     } catch (error) {
       console.error("Failed to call AI API", error);
       alert("Failed to call AI API");
     } finally {
-      setloading(false);
+      setLoading(false);
     }
   }
+
+  // 🔥 AUTO SCROLL (OFFSET)
+  useEffect(() => {
+    if (result && resultRef.current) {
+      const offset = 120;
+      const elementTop =
+        resultRef.current.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: elementTop - offset,
+        behavior: "smooth",
+      });
+    }
+  }, [result]);
+
   return (
-    <main className="min-h-screen bg-slate-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">AI Blog Writer</h1>
-          <p className="text-sm text-slate-600 mt-1">
+    <motion.main
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-12 overflow-hidden"
+    >
+      {/* 🌈 AURORA BACKGROUND */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-pink-400/25 blur-3xl rounded-full" />
+        <div className="absolute top-1/3 -right-40 w-[520px] h-[520px] bg-purple-400/25 blur-3xl rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.10),transparent_60%)]" />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto">
+
+        {/* HEADER */}
+        <motion.header
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.4 }}
+          className="mb-10 text-center"
+        >
+          <h1 className="text-4xl font-extrabold text-zinc-900">
+            AI Blog Writer
+          </h1>
+          <p className="text-zinc-600 mt-3 max-w-xl mx-auto">
             Enter a topic and tone — the AI will generate a long-form,
             SEO-friendly blog for you.
           </p>
-        </header>
+        </motion.header>
 
-        {/* Form Card */}
-        <section className="bg-white rounded-xl shadow-sm border p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        {/* 🌊 GLASS FORM PANEL */}
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.45, ease: "easeOut" }}
+          whileHover={{ y: -4 }}
+         className="
+  relative rounded-3xl p-8
+
+  /* glass base */
+  bg-gradient-to-br from-pink-500/10 via-white/10 to-purple-500/10
+  backdrop-blur-2xl
+
+  /* STRONG DEFAULT OUTLINE */
+  border border-pink-500/30
+  ring-1 ring-purple-500/20
+
+  /* depth */
+  shadow-[0_20px_50px_rgba(168,85,247,0.18)]
+
+  /* hover = stronger */
+  transition-all duration-300
+  hover:border-transparent
+  hover:ring-2 hover:ring-pink-500/50
+  hover:shadow-[0_0_60px_rgba(168,85,247,0.35)]
+"
+
+        >
+          {/* subtle inner glow */}
+          <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
+
+          <form onSubmit={handleSubmit} className="relative space-y-6">
+            {/* Topic */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Blog Topic
               </label>
               <input
-                className="w-full rounded-md border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 type="text"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="eg. How to build AI SaaS with Next.js"
+                placeholder="e.g. How to build AI SaaS with Next.js"
+               className="
+  w-full rounded-xl
+
+  /* glass */
+  bg-white/40 backdrop-blur
+
+  /* STRONG DEFAULT BORDER */
+  border border-purple-500/30
+  ring-1 ring-purple-500/20
+
+  px-4 py-3
+  text-zinc-800 placeholder:text-zinc-400
+
+  transition-all
+  focus:outline-none
+  focus:border-transparent
+  focus:ring-2 focus:ring-pink-500/60
+"
+
               />
             </div>
 
-            <div className="flex gap-4 items-center">
+            {/* Tone + Button */}
+            <div className="flex flex-wrap gap-6 items-end pt-4 border-t border-white/30">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">
                   Tone
                 </label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="rounded-md border px-3 py-2"
+                 className="
+  rounded-xl
+
+  bg-white/40 backdrop-blur
+
+  border border-purple-500/30
+  ring-1 ring-purple-500/20
+
+  px-4 py-2
+  text-zinc-800
+
+  transition-all
+  focus:outline-none
+  focus:border-transparent
+  focus:ring-2 focus:ring-pink-500/60
+"
+
                 >
                   <option value="friendly">Friendly</option>
                   <option value="professional">Professional</option>
@@ -69,61 +184,124 @@ function BlogWriterClient() {
                 </select>
               </div>
 
-              <div className="ml-auto mt-6">
-                <button
-                  type="submit"
-                  disabled={loading || !topic.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
-                >
-                  {loading ? "Generating..." : "Generate Blog"}
-                </button>
-              </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                disabled={loading || !topic.trim()}
+                className="
+                  ml-auto inline-flex items-center gap-2
+                  px-6 py-3 rounded-xl font-medium
+                  bg-gradient-to-r from-pink-500 to-purple-600
+                  text-white
+                  shadow-lg
+                  transition-all
+                  hover:shadow-[0_0_30px_rgba(168,85,247,0.45)]
+                  disabled:opacity-60
+                "
+              >
+                {loading ? "Generating..." : "Generate Blog"}
+              </motion.button>
             </div>
           </form>
-        </section>
+        </motion.section>
 
-        {/* Result */}
-        {result && (
-          <section
-            id="generated-blog"
-            className="mt-8 bg-white border rounded-xl p-6 shadow-sm space-y-4"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold">Generated blog</h2>
-                <p className="text-sm text-slate-500 mt-1">
-                  You can copy or download the content below.
-                </p>
+        {/* RESULT */}
+        <AnimatePresence>
+          {result && (
+            <motion.section
+  ref={resultRef}
+  initial={{ opacity: 0, y: 30, scale: 0.98 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0 }}
+  transition={{ duration: 0.45, ease: "easeOut" }}
+  className="
+    mt-12 relative rounded-3xl p-8 space-y-6
+
+    /* glass base */
+    bg-gradient-to-br from-pink-500/10 via-white/10 to-purple-500/10
+    backdrop-blur-2xl
+
+    /* STRONG DEFAULT OUTLINE */
+    border border-purple-500/30
+    ring-1 ring-purple-500/20
+
+    /* depth */
+    shadow-[0_20px_50px_rgba(168,85,247,0.18)]
+
+    /* hover enhancement */
+    transition-all duration-300
+    hover:border-transparent
+    hover:ring-2 hover:ring-pink-500/50
+    hover:shadow-[0_0_60px_rgba(168,85,247,0.35)]
+  "
+>
+  {/* subtle inner line */}
+  <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
+
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-semibold text-zinc-900">
+                    Generated Blog
+                  </h2>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    You can copy or download the content below.
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(result);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className={`
+                      px-4 py-2 rounded-lg text-sm font-medium transition
+                      ${
+                        copied
+                          ? "bg-green-100 text-green-700 border border-green-200"
+                          : "border hover:bg-zinc-50"
+                      }
+                    `}
+                  >
+                    {copied ? "Copied ✓" : "Copy"}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([result], {
+                        type: "text/markdown",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "blog.md";
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-sm transition"
+                  >
+                    Download .md
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button className="px-3 py-2 rounded-md border hover:bg-slate-50 text-sm">
-                  Copy
-                </button>
-                <button className="px-3 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-sm">
-                  Download .md
-                </button>
-              </div>
-            </div>
+              <article className="prose max-w-none text-zinc-800">
+                <ReactMarkdown>{result}</ReactMarkdown>
+              </article>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
-            {/* Content container: preserve line breaks */}
-            <article className="prose max-w-none whitespace-pre-wrap text-slate-800">
-              <ReactMarkdown >{result}</ReactMarkdown>
-            </article>
-          </section>
-        )}
-
-        {/* Empty state / example */}
+        {/* EMPTY STATE */}
         {!result && !loading && (
-          <section className="mt-6 text-sm text-slate-500">
-            <p>
-              Tip: be specific in the topic and choose 'technical' for
-              code-heavy posts.
-            </p>
-          </section>
+          <p className="mt-6 text-sm text-zinc-500 text-center">
+            Tip: Be specific in the topic and choose{" "}
+            <span className="font-medium">technical</span> for code-heavy posts.
+          </p>
         )}
       </div>
-    </main>
+    </motion.main>
   );
 }
 

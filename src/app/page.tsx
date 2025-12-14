@@ -1,248 +1,208 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import HomeSkeleton from "./HomeSkeleton";
+import { useUser } from "@/context/user-context";
+import { Diamond } from "lucide-react";
+import Image from "next/image";
 
-export default function Home() {
+export default function LandingPage() {
   const { data: session, status } = useSession();
+  const { plan, credits } = useUser();
+
   if (status === "loading") {
-    return <p>Loading your Session..</p>;
+    return <HomeSkeleton />;
   }
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-slate-50">
-      <header className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-extrabold tracking-tight">
-          SaaS AI
-        </Link>
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      {/* 🌈 AURORA BACKGROUND */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-pink-400/25 blur-3xl" />
+        <div className="absolute top-1/4 -right-40 h-[600px] w-[600px] rounded-full bg-purple-400/25 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-[500px] w-[500px] rounded-full bg-cyan-400/20 blur-3xl" />
+      </div>
 
-        <nav className="flex items-center gap-4">
-          <Link
-            href="/pricing"
-            className="text-sm px-3 py-2 rounded-md hover:bg-slate-100 transition"
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm px-3 py-2 rounded-md hover:bg-slate-100 transition"
-          >
-            Dashboard
-          </Link>
-          {session ? (
-            <button
-              onClick={() => signOut()}
-              className="text-sm px-3 py-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => signIn("google")}
-              className="text-sm px-3 py-2 rounded-md bg-sky-50 text-sky-700 hover:bg-sky-100 transition"
-            >
-              Login
-            </button>
-          )}
-        </nav>
-      </header>
+      {/* HERO */}
+      <section className="relative max-w-7xl mx-auto px-6 pt-14 pb-28 grid gap-16 lg:grid-cols-2 items-start">
+        {/* LEFT CONTENT */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="space-y-8"
+        >
+          <span className="inline-flex items-center rounded-full bg-white/70 backdrop-blur px-4 py-1 text-sm font-medium border shadow-sm">
+            ⚡ AI SaaS Platform
+          </span>
 
-      <section className="max-w-6xl mx-auto px-6 py-12 grid gap-10 lg:grid-cols-2 items-center">
-        {/* Left: Hero text */}
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Build faster with AI-powered content & automation
+          <h1 className="text-4xl md:text-6xl xl:text-7xl font-extrabold leading-tight tracking-tight text-zinc-900">
+            Create smarter content with{" "}
+            <span className="bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+              AI automation
+            </span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-xl">
-            Generate blog posts, emails, captions, summaries and more — all
-            backed by Gemini. Start free, upgrade when you need unlimited
-            credits and priority support.
+
+          <p className="text-lg md:text-xl text-zinc-600 max-w-xl">
+            Generate blogs, emails, captions, summaries and chat responses —
+            powered by Gemini AI. Built for creators, founders and developers.
           </p>
 
-          <div className="flex flex-wrap gap-3 items-center">
-            <Link
-              href="/pricing"
-              className="inline-block px-5 py-3 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition"
-            >
-              View Pricing
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="inline-block px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
-            >
-              Go to Dashboard
-            </Link>
+          {/* FEATURE CHIPS */}
+          <div className="flex flex-wrap gap-3 pt-4">
+            {[
+              "🧠 Gemini AI",
+              "✍️ Blog Writer",
+              "📧 Email Writer",
+              "📄 PDF Summarizer",
+              "💬 AI Chat",
+              "💳 Credits System",
+            ].map((item) => (
+              <span
+                key={item}
+                className="rounded-full bg-white/70 backdrop-blur px-4 py-1 text-sm border shadow-sm"
+              >
+                {item}
+              </span>
+            ))}
           </div>
+        </motion.div>
 
-          <ul className="mt-4 flex gap-4 text-sm text-slate-500">
-            <li>✅ Chat & prompts</li>
-            <li>✅ PDF summarizer</li>
-            <li>✅ Blog & email writers</li>
-            <li>✅ Credits & subscription</li>
-          </ul>
-        </div>
+        {/* RIGHT GLASS CARD */}
+        <motion.aside
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          whileHover={{ y: -6 }}
+          className="relative lg:mt-12"
+        >
+          {/* GLOW */}
+          <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-70 blur-md" />
 
-        {/* Right: Session / CTA card */}
-        <aside className="rounded-2xl bg-white p-6 shadow-md border">
-          {session ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-xl">
-                  {session.user?.name?.[0] ?? "U"}
+          {/* CARD */}
+          <div className="relative rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl p-7">
+            {session ? (
+              <div className="space-y-6">
+                {/* USER */}
+                <div className="flex items-center gap-4">
+                  <div
+                    className="
+                    h-14 w-14 rounded-full
+                    bg-gradient-to-br from-pink-500 to-purple-600
+                    ring-4 ring-purple-300/30
+                    text-white flex items-center justify-center
+                    text-xl font-bold
+                  "
+                  >
+                    {session.user?.name?.[0] ?? "U"}
+                  </div>
+
+                  <div>
+                    <p className="font-semibold text-zinc-900">
+                      {session.user?.name}
+                    </p>
+                    <p className="text-sm text-zinc-500">
+                      {session.user?.email}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold">{session.user?.name}</p>
-                  <p className="text-sm text-slate-500">
-                    {session.user?.email}
-                  </p>
+
+                {/* STATS */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-xl bg-white/70 p-4 text-center border">
+                    <p className="text-xs text-zinc-500">Plan</p>
+                    <p className="font-bold">{plan}</p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/70 p-4 text-center border">
+                    <p className="text-xs text-zinc-500">Credits</p>
+                    {plan === "PRO" ? (
+                      <div className="flex justify-center items-center gap-1 text-purple-700 font-bold">
+                        💎 ∞
+                      </div>
+                    ) : (
+                      <p className="font-bold">{credits ?? 20}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* ACTIONS */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <Link
+                    href="/dashboard"
+                    className="
+                      flex items-center justify-center
+                      rounded-xl px-4 py-3 font-medium
+                      text-white
+                      bg-gradient-to-r from-pink-500 to-purple-600
+                      shadow-lg
+                      hover:shadow-[0_0_25px_rgba(168,85,247,0.45)]
+                      transition
+                    "
+                  >
+                    Open Dashboard
+                  </Link>
+
+                  <Link
+                    href="/pricing"
+                    className="
+                      flex items-center justify-center
+                      rounded-xl px-4 py-3 font-medium
+                      bg-white/80 backdrop-blur
+                      border border-purple-200
+                      hover:bg-white
+                      transition
+                    "
+                  >
+                    View Pricing
+                  </Link>
                 </div>
               </div>
+            ) : (
+              /* LOGGED OUT */
+              <div className="space-y-6">
+                <p className="text-lg font-semibold text-zinc-800">
+                  Welcome back
+                </p>
 
-              <div className="flex items-center gap-3">
-                <div className="px-3 py-1 rounded-full bg-slate-100 text-sm">
-                  Plan:{" "}
-                  <span className="font-medium ml-1">
-                    {session.user?.plan ?? "FREE"}
-                  </span>
-                </div>
-                <div className="px-3 py-1 rounded-full bg-slate-100 text-sm">
-                  Credits:{" "}
-                  <span className="font-medium ml-1">
-                    {session.user?.credits ?? 0}
-                  </span>
-                </div>
-              </div>
+                <p className="text-sm text-zinc-500">
+                  Sign in to access your AI workspace
+                </p>
 
-              <div className="pt-2">
-                <Link
-                  href="/dashboard"
-                  className="inline-block w-full text-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-                >
-                  Go to Dashboard
-                </Link>
-              </div>
-
-              <div className="pt-2 flex gap-2">
                 <button
-                  onClick={() => signOut()}
-                  className="flex-1 px-3 py-2 rounded-lg border text-sm hover:bg-slate-50 transition"
+                  onClick={() =>
+                    signIn("google", { callbackUrl: "/dashboard" })
+                  }
+                  className="
+                    w-full flex items-center justify-center gap-3
+                    rounded-xl px-4 py-3
+                    font-medium
+                    bg-white/90 backdrop-blur
+                    border border-zinc-200
+                    shadow-sm
+                    hover:shadow-md
+                    transition
+                  "
                 >
-                  Logout
+                  <Image
+                    src="/google.png"
+                    alt="Google"
+                    width={50}
+                    height={50}
+                  />
+                  Sign in with Google
                 </button>
 
-                <Link
-                  href="/pricing"
-                  className="flex-1 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 text-sm hover:bg-indigo-100 transition text-center"
-                >
-                  Upgrade
-                </Link>
+                <p className="text-xs text-zinc-400 text-center">
+                  Secure authentication powered by Google
+                </p>
               </div>
-
-              <p className="text-xs text-slate-400 mt-3">
-                Session ID:{" "}
-                <span className="font-mono">{session.user?.id}</span>
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-slate-700 font-semibold">
-                You are not logged in
-              </p>
-              <p className="text-sm text-slate-500">
-                Sign in with Google to save your chat history, credits and
-                access PRO features.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => signIn("google")}
-                  className="flex-1 px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition"
-                >
-                  Continue with Google
-                </button>
-                <Link
-                  href="/pricing"
-                  className="flex-1 px-4 py-2 rounded-lg border text-slate-700 hover:bg-slate-50 text-center"
-                >
-                  Pricing
-                </Link>
-              </div>
-            </div>
-          )}
-        </aside>
+            )}
+          </div>
+        </motion.aside>
       </section>
-
-      <footer className="border-t mt-10">
-        <div className="max-w-6xl mx-auto px-6 py-6 text-sm text-slate-500 flex justify-between">
-          <span>© {new Date().getFullYear()} SaaS AI</span>
-          <nav className="flex gap-4">
-            <Link href="/terms">Terms</Link>
-            <Link href="/privacy">Privacy</Link>
-          </nav>
-        </div>
-      </footer>
     </main>
   );
 }
-
-//demo one used for learning
-// return (
-//   <main className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-slate-50">
-//     <div className="max-w-2xl text-center space-y-4">
-//       <h1 className="text-3xl md:text-5xl font-bold">
-//         AI SaaS Content & Automation Platform
-//       </h1>
-
-//       <p className="text-slate-300">
-//         Demo: Showing how auth data from NextAuth appears on the frontend.
-//       </p>
-
-//       {/* SESSION STATUS */}
-//       <div className="mt-8 p-4 rounded-xl bg-slate-900 border border-slate-700 text-left w-full">
-//         <p className="text-sm text-slate-400 mb-2">
-//           Session status: <span className="font-mono">{status}</span>
-//         </p>
-
-//         {status === "loading" && <p>Checking if you are logged in...</p>}
-
-//         {status === "unauthenticated" && (
-//           <>
-//             <p className="mb-3">You are <span className="font-semibold">not logged in</span>.</p>
-//             <Link
-//               href="/api/auth/signin"
-//               className="inline-block px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 transition"
-//             >
-//               Go to Login
-//             </Link>
-//           </>
-//         )}
-
-//         {status === "authenticated" && (
-//           <>
-//             <p className="mb-3">
-//               You are <span className="font-semibold">logged in</span> as:
-//             </p>
-//             <ul className="space-y-1 font-mono text-sm">
-//               <li>
-//                 {/* <span className="text-slate-400">ID:</span> {session?.user?.id as string} */}
-//               </li>
-//               <li>
-//                 <span className="text-slate-400">Name:</span> {session?.user?.name}
-//               </li>
-//               <li>
-//                 <span className="text-slate-400">Email:</span> {session?.user?.email}
-//               </li>
-//             </ul>
-
-//             <Link
-//               href="/api/auth/signout"
-//               className="mt-4 inline-block px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 transition"
-//             >
-//               Logout
-//             </Link>
-//           </>
-//         )}
-//       </div>
-//     </div>
-//   </main>
-// );

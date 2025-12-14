@@ -1,59 +1,82 @@
-"use client"
-import axios from 'axios'
-import React,{useState} from 'react'
+"use client";
 
-declare global{
-    interface Window{
-        Razorpay?:any;
-    }
+import axios from "axios";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/user-context";
+
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
 }
 
 function RazorpayUpgradeButton() {
-    const [loading,setloading]=useState(false)
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { refreshUser } = useUser(); // 🔥 important
 
-    async function handleUpgrade() {
-        setloading(true)
+  async function handleUpgrade() {
+    try {
+      setLoading(true);
 
-        const res=await axios.post("/api/billing/checkout")
-        const data=res.data
+      const res = await axios.post("/api/billing/checkout");
+      const data = res.data;
 
-        //checks if the subscription was created from backend
-        if(!data.subscriptionId){
-            alert("Error starting subscription")
-            setloading(false)
-            return
-        }
+      if (!data.subscriptionId) {
+        alert("Error starting subscription");
+        setLoading(false);
+        return;
+      }
 
-        //razorpay pop up shows all this options to the user
-        const options={
-            key:data.key,
-            subscription_id:data.subscriptionId,
-            name:"AI SAAS Platform",
-            description:"PRO Users",
+      const options = {
+        key: data.key,
+        subscription_id: data.subscriptionId,
+        name: "AI SAAS Platform",
+        description: "PRO Users",
 
-            //runs only when payment is successful
-            handler:function(response:any){
-                console.log("Payment success",response)
-                alert("Payment successful!")
-            },
-            theme:{color:"#3399cc"}
-        }
+        // ✅ runs ONLY after successful payment
+        handler: async function (response: any) {
+          console.log("Payment success", response);
+          alert("Payment successful!");
+          // 🔄 ensure DB + session + context are fresh
+          // await refreshUser();     // updates plan + credits in context
+          router.push("/dashboard");
+          // router.refresh();        // refreshes server components
+        },
 
-        //opens razorpay payment window so users can pay
-        // bcz of the script we mentioned in layout we need to write window.rzp
-        const rzp=new window.Razorpay(options)
-        rzp.open()
-        setloading(false)
+        theme: { color: "#6366f1" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
     }
+  }
 
   return (
-    <div>
-        <button className="px-4 py-2 rounded-lg bg-white text-indigo-700 font-medium" disabled={loading} onClick={handleUpgrade}>
-                {loading?"Opening Razorpay":"Upgrade to Pro"}
-        </button>
-      
-    </div>
-  )
+    <button
+      disabled={loading}
+      onClick={handleUpgrade}
+      className="
+        inline-flex items-center justify-center gap-2
+        px-6 py-3 rounded-xl font-semibold
+        bg-gradient-to-r from-pink-500 to-purple-600
+        text-white
+        shadow-lg
+        transition-all duration-300
+        hover:shadow-[0_0_25px_rgba(168,85,247,0.45)]
+        hover:-translate-y-0.5
+        disabled:opacity-60 disabled:cursor-not-allowed
+      "
+    >
+      {loading ? "Opening Razorpay..." : "Upgrade to Pro"}
+    </button>
+  );
 }
 
-export default RazorpayUpgradeButton
+export default RazorpayUpgradeButton;

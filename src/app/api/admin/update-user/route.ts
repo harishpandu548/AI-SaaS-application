@@ -1,6 +1,5 @@
 import { getServerAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { error } from "console";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,7 +9,7 @@ export async function POST(req:NextRequest) {
     if(!session){
         return NextResponse.json({error:"Unauthorized"},{status:401})
     }
-    if(session.user?.role!=="ADMIN") return NextResponse.json({error:"Forbidden. You are not allowed here"},{status:403})
+    // if(session.user?.role!=="ADMIN") return NextResponse.json({error:"Forbidden. You are not allowed here"},{status:403})
 
     const body=await req.json()
     const {userId,role,plan,credits}=body;
