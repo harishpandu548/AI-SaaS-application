@@ -47,15 +47,14 @@ export default function PdfSummarizerClient() {
 
       const data = await res.json();
       setSummary(data.summary);
-      await refreshUser()
+      await refreshUser();
     } catch {
       alert(
-  "Gemini API daily limit reached.\n\n" +
-  "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
-  "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
-  "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
-);
-
+        "Gemini API daily limit reached.\n\n" +
+          "This project uses the Gemini free tier, which allows up to 20 AI responses per day.\n\n" +
+          "Today's limit has been exhausted. Please try again tomorrow.\n\n" +
+          "Note: Higher limits require a paid Gemini plan. This project demonstrates full AI SaaS functionality for evaluation purposes."
+      );
     } finally {
       setLoading(false);
     }
@@ -72,6 +71,18 @@ export default function PdfSummarizerClient() {
     }
   }, [summary]);
 
+  function stripMarkdown(text: string) {
+    return text
+      .replace(/^###\s?/gm, "")
+      .replace(/^##\s?/gm, "")
+      .replace(/^#\s?/gm, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/^\s*[-•*]\s+/gm, "")
+      .replace(/\n{2,}/g, "\n\n")
+      .trim();
+  }
+
   return (
     <motion.main
       initial={{ opacity: 0, y: 12 }}
@@ -87,8 +98,6 @@ export default function PdfSummarizerClient() {
       </div>
 
       <div className="relative max-w-3xl mx-auto">
-
-        
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,7 +111,6 @@ export default function PdfSummarizerClient() {
             Upload a PDF and get a clean, concise summary powered by AI.
           </p>
         </motion.header>
-
 
         <motion.section
           initial={{ opacity: 0, y: 24 }}
@@ -129,8 +137,6 @@ export default function PdfSummarizerClient() {
           <div className="absolute inset-0 rounded-3xl ring-1 ring-white/20 pointer-events-none" />
 
           <form onSubmit={handleSubmit} className="relative space-y-6">
-
-      
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Upload PDF
@@ -159,7 +165,6 @@ export default function PdfSummarizerClient() {
               )}
             </div>
 
-      
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Extra Instructions (optional)
@@ -183,14 +188,12 @@ export default function PdfSummarizerClient() {
               />
             </div>
 
-      
             {error && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
                 {error}
               </p>
             )}
 
-      
             <button
               type="submit"
               disabled={loading || !file}
@@ -207,7 +210,6 @@ export default function PdfSummarizerClient() {
             </button>
           </form>
         </motion.section>
-
 
         <AnimatePresence>
           {summary && (
@@ -253,13 +255,15 @@ export default function PdfSummarizerClient() {
                 </button>
               </div>
 
-              <div className="
-                whitespace-pre-wrap leading-relaxed
-                bg-white/50 backdrop-blur
-                border border-purple-500/20
-                rounded-xl p-6 text-zinc-800
-              ">
-                {summary}
+              <div
+                className="
+  whitespace-pre-wrap leading-relaxed
+  bg-white/50 backdrop-blur
+  border border-purple-500/20
+  rounded-xl p-6 text-zinc-800
+"
+              >
+                {stripMarkdown(summary)}
               </div>
             </motion.section>
           )}

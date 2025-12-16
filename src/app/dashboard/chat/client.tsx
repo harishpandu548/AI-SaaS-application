@@ -23,8 +23,6 @@ type Props = {
 };
 
 function ChatClient({ existingChats }: Props) {
-  //   console.log("user chats:", existingChats);
-
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -39,16 +37,11 @@ function ChatClient({ existingChats }: Props) {
   const [chatList, setChatList] = useState(existingChats);
   const { refreshUser } = useUser();
 
-  // delete the chat
   async function handleDeleteChat(id: string) {
     if (!confirm("Are you sure you want to delete this chat?")) return;
     try {
       await axios.post("/api/ai/chat/delete", { chatId: id });
-
-      //it removes chat but when on refresh only u see so lets manually do it when deleted also without refresh lets delete the chat with title
       setChatList((prev) => prev.filter((c) => c.id !== id));
-
-      // if we deleted the currently open chat then reset to refresh
       if (id === chatId) {
         setChatId(null);
         setMessages([
@@ -64,14 +57,12 @@ function ChatClient({ existingChats }: Props) {
     }
   }
 
-  //load messages for a clicked chat
   async function handleselectChat(id: string) {
     try {
       setLoadingChat(true);
       const res = await axios.get(`/api/ai/chat/history?chatId=${id}`);
       const data = res.data;
 
-      //backend returns the chat msgs format we set (we setted it in that format so we get like that now)
       const loadMessages: Message[] = (data.messages || []).map((m: any) => {
         const role: Message["role"] =
           m.role === "assistant" ? "assistant" : "user";
@@ -79,7 +70,6 @@ function ChatClient({ existingChats }: Props) {
         return { role, content };
       });
 
-      //update the state
       setChatId(id);
       setMessages(
         loadMessages.length > 0
@@ -136,11 +126,9 @@ function ChatClient({ existingChats }: Props) {
 
       const data = res.data;
       await refreshUser();
-      // router.refresh();
+
       if (data.chatId && !chatId) {
         setChatId(data.chatId);
-
-        // fixing untitled chat name
         setChatList((prev) => [
           {
             id: data.chatId,
@@ -167,11 +155,10 @@ function ChatClient({ existingChats }: Props) {
   }
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-6 py-8 overflow-hidden">
-      {/*  bg main theme BACKGROUND */}
+    <main className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-3 sm:px-6 py-4 sm:py-8 overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-pink-400/25 blur-3xl rounded-full" />
-        <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-purple-400/25 blur-3xl rounded-full" />
+        <div className="absolute -top-40 -left-40 w-[320px] sm:w-[500px] h-[320px] sm:h-[500px] bg-pink-400/25 blur-3xl rounded-full" />
+        <div className="absolute top-1/3 -right-40 w-[320px] sm:w-[500px] h-[320px] sm:h-[500px] bg-purple-400/25 blur-3xl rounded-full" />
       </div>
 
       <div className="relative max-w-6xl mx-auto">
@@ -179,31 +166,31 @@ function ChatClient({ existingChats }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-8 text-center"
+          className="mb-6 sm:mb-8 text-center"
         >
-          <h1 className="text-4xl font-extrabold text-zinc-900">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-900">
             AI Assistant
           </h1>
-          <p className="text-zinc-600 mt-2 max-w-xl mx-auto">
+          <p className="text-zinc-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">
             Chat with your personal AI assistant. Your conversations are saved
             automatically.
           </p>
         </motion.header>
 
-        <div className="flex gap-6 h-[70vh]">
-          {/* left chat history list */}
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 h-[calc(100vh-220px)]">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="
-              w-1/4 rounded-3xl
+              w-full lg:w-1/4
+              rounded-3xl
               bg-white/30 backdrop-blur-2xl
               border border-purple-500/25
               shadow-[0_20px_60px_rgba(168,85,247,0.25)]
-              p-4 flex flex-col
+              p-3 sm:p-4 flex flex-col
+              max-h-[40vh] lg:max-h-full
             "
           >
-            {/* new chat button to create a new chat */}
             <button
               onClick={() => {
                 setChatId(null);
@@ -216,16 +203,19 @@ function ChatClient({ existingChats }: Props) {
                 ]);
               }}
               className="
-                mb-4 py-2 rounded-xl
+                mb-3 sm:mb-4 py-2 rounded-xl
                 bg-gradient-to-r from-pink-500 to-purple-600
                 text-white font-medium
                 hover:shadow-[0_0_25px_rgba(168,85,247,0.45)]
+                text-sm
               "
             >
               + New Chat
             </button>
 
-            <h2 className="font-semibold text-zinc-800 mb-3">Your chats</h2>
+            <h2 className="font-semibold text-zinc-800 mb-2 sm:mb-3 text-sm">
+              Your chats
+            </h2>
 
             <ul className="space-y-2 overflow-y-auto">
               {chatList.map((chat) => (
@@ -249,13 +239,12 @@ function ChatClient({ existingChats }: Props) {
                     {chat.title || "New chat"}
                   </span>
 
-                  {/* delete button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteChat(chat.id);
                     }}
-                    className="ml-2 text-red-500 text-xs opacity-0 group-hover:opacity-100 transition"
+                    className="ml-2 text-red-500 text-xs opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition"
                   >
                     ✕
                   </button>
@@ -264,7 +253,6 @@ function ChatClient({ existingChats }: Props) {
             </ul>
           </motion.div>
 
-          {/*right side current chat*/}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -274,9 +262,10 @@ function ChatClient({ existingChats }: Props) {
               border border-purple-500/25
               shadow-[0_20px_60px_rgba(168,85,247,0.25)]
               flex flex-col
+              min-h-0
             "
           >
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4">
               {messages.map((m, i) => (
                 <div
                   key={i}
@@ -286,7 +275,7 @@ function ChatClient({ existingChats }: Props) {
                 >
                   <div
                     className={`
-                      max-w-[75%] px-4 py-3 rounded-2xl text-sm
+                      max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm
                       ${
                         m.role === "user"
                           ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
@@ -312,16 +301,17 @@ function ChatClient({ existingChats }: Props) {
               )}
             </div>
 
-            <div className="p-4 border-t border-white/40 flex gap-3">
+            <div className="p-3 sm:p-4 border-t border-white/40 flex gap-2 sm:gap-3">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="
-                  flex-1 rounded-xl px-4 py-3
+                  flex-1 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3
                   bg-white/60 backdrop-blur
                   border border-purple-500/30
                   focus:outline-none
                   focus:ring-2 focus:ring-pink-500/60
+                  text-sm
                 "
                 placeholder="Type your message..."
               />
@@ -329,9 +319,10 @@ function ChatClient({ existingChats }: Props) {
                 onClick={sendMessage}
                 disabled={sending}
                 className="
-                  px-5 py-3 rounded-xl font-medium
+                  px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-medium
                   bg-gradient-to-r from-pink-500 to-purple-600
                   text-white disabled:opacity-50
+                  text-sm
                 "
               >
                 Send
