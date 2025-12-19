@@ -1,9 +1,11 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import Github from "next-auth/providers/github";
 import { prisma } from "./db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { getServerSession } from "next-auth";
+import Facebook from "next-auth/providers/facebook";
 
 export const authOptions: NextAuthOptions = {
   // this line bcz of prisma adapter
@@ -57,6 +59,16 @@ export const authOptions: NextAuthOptions = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Github({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
+     Facebook({
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
 

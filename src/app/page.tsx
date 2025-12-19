@@ -18,7 +18,7 @@ export default function LandingPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
-{/* bg theme */}
+      {/* bg theme */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-pink-400/25 blur-3xl" />
         <div className="absolute top-1/4 -right-40 h-[600px] w-[600px] rounded-full bg-purple-400/25 blur-3xl" />
@@ -80,7 +80,7 @@ export default function LandingPage() {
           <div className="relative rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl p-7">
             {session ? (
               <div className="space-y-6">
-              {/* user */}
+                {/* user */}
                 <div className="flex items-center gap-4">
                   <div
                     className="
@@ -104,7 +104,6 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-xl bg-white/70 p-4 text-center border">
                     <p className="text-xs text-zinc-500">Plan</p>
@@ -123,7 +122,6 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-            
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <Link
                     href="/dashboard"
@@ -190,8 +188,56 @@ export default function LandingPage() {
                   Sign in with Google
                 </button>
 
+                <button
+                  onClick={() =>
+                    signIn("github", { callbackUrl: "/dashboard" })
+                  }
+                  className="
+                    w-full flex items-center justify-center gap-3
+                    rounded-xl px-4 py-3
+                    font-medium
+                    bg-white/90 backdrop-blur
+                    border border-zinc-200
+                    shadow-sm
+                    hover:shadow-md
+                    transition
+                  "
+                >
+                  <Image
+                    src="/github.png"
+                    alt="Google"
+                    width={50}
+                    height={50}
+                  />
+                  Sign in with GitHub
+                </button>
+
+                <button
+                  onClick={() =>
+                    signIn("facebook", { callbackUrl: "/dashboard" })
+                  }
+                  className="
+                    w-full flex items-center justify-center gap-3 
+                    rounded-xl px-4 py-3
+                    font-medium
+                    bg-white/90 backdrop-blur
+                    border border-zinc-200
+                    shadow-sm
+                    hover:shadow-md
+                    transition
+                  "
+                >
+                  <Image
+                    src="/facebook.png"
+                    alt="Facebook"
+                    width={50}
+                    height={50}
+                  />
+                  Sign in with Facebook
+                </button>
+
                 <p className="text-xs text-zinc-400 text-center">
-                  Secure authentication powered by Google
+                  Secure authentication powered by Google GitHub Facebook
                 </p>
               </div>
             )}
